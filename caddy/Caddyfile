@@ -1,0 +1,33 @@
+{
+	email admin@{$SERVER_NAME}
+}
+
+{$SERVER_NAME} {
+	header /.well-known/matrix/* Content-Type application/json
+	header /.well-known/matrix/* Access-Control-Allow-Origin "*"
+
+	respond /.well-known/matrix/server `{"m.server":"{$MATRIX_HOST}:443"}` 200
+	respond /.well-known/matrix/client `{"m.homeserver":{"base_url":"https://{$MATRIX_HOST}"}}` 200
+
+	respond "Matrix well-known host for {$SERVER_NAME}" 200
+}
+
+{$MATRIX_HOST} {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+	}
+
+	reverse_proxy synapse:8008
+}
+
+{$CHAT_HOST} {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+
+	reverse_proxy cinny:80
+}
