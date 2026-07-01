@@ -1,109 +1,77 @@
-# Home Server Network Notes
+# Network Notes
 
-自宅LAN内のサーバー `192.168.11.30` に Matrix/Synapse + Cinny を置く場合のネットワーク要点です。
+デプロイ形態(docs/architecture.md の Deployment topologies)ごとのネットワーク要点です。
 
-## Recommended setup
+- 経路A(既定): 外部 → Cloudflare → VPS → Tailscale → 自宅サーバー。メディア(UDP)は Cloudflare を迂回して VPS 直終端
+- 経路B: VPS 単独。自宅サーバーは関与しない
+- 代替案: 自宅直公開。従来の 80/443 転送パターン(帯域コスト優先時の選択肢)
 
-LAN:
+## 経路A: Cloudflare + VPS + Tailscale(既定)
 
-- Home server: `192.168.11.30`
-- Docker/Caddy: `80/tcp` and `443/tcp` listen on the home server
+### 自宅側
 
-Router port forwarding:
+**ルーターのポート開放は一切不要です。** 自宅サーバーは Tailscale で VPS へアウトバウンド接続するだけなので、CGNAT や MAP-E / DS-Lite(v6プラス等)配下の回線でも問題なく動きます。従来パターンの主要な障害(固定IP、ポート制限、hairpin NAT)がすべて消えるのが、この経路の最大の利点です。
 
-- WAN `80/tcp` -> `192.168.11.30:80`
-- WAN `443/tcp` -> `192.168.11.30:443`
+- 自宅サーバーに静的な DHCP リースを与える
+- Tailscale をインストールし、VPS と同一 tailnet に参加させる
+- OS の自動セキュリティ更新を有効にする
 
-DNS:
+### DNS(Cloudflare)
 
-- `example.com` -> home WAN IP
-- `matrix.example.com` -> home WAN IP
-- `chat.example.com` -> home WAN IP
+| ホスト | Cloudflare proxy | 向き先 | 用途 |
+| --- | --- | --- | --- |
+| `example.com` | proxied | VPS | well-known 配信 |
+| `matrix.example.com` | proxied | VPS | Synapse API(client + federation) |
+| `chat.example.com` | proxied | VPS | クライアント配信 |
+| `rtc.example.com` | **DNS only** | VPS | LiveKit / lk-jwt / ハイレゾ音声(Phase 3 以降) |
 
-Matrix:
+Cloudflare の proxy は HTTP(S)/WebSocket しか通せないため、`rtc.*` は必ず DNS only(グレー雲)にして VPS の IP へ直接届くようにします。逆に言うと **VPS の IP は `rtc.*` から判明します**。VPS は隠す対象ではなく、公開終端として扱ってください(自宅 IP は隠れたままです)。
 
-- `SERVER_NAME=example.com`
-- `MATRIX_HOST=matrix.example.com`
-- `CHAT_HOST=chat.example.com`
-- `/.well-known/matrix/server` returns `{"m.server":"matrix.example.com:443"}`
+### VPS 側ファイアウォール
 
-With this pattern, federation can use `443/tcp`. You usually do not need to expose `8448/tcp`.
+- `80/tcp`, `443/tcp`: edge Caddy(HTTP系)
+- `7881/tcp` と UDP レンジ(例: `50100-50200`): LiveKit のメディア(Phase 3 以降)
+- ハイレゾ音声サーバーの待受ポート(Phase 6 で確定)
+- Tailscale はアウトバウンドで確立するため受信開放は不要
 
-## When 8448 is needed
+### Tailscale の注意
 
-Matrix federation defaults to port `8448` when there is no delegation through `.well-known` or SRV.
+- VPS ⇄ 自宅が direct 接続になっていることを `tailscale status` で確認する(DERP リレー経由だと HTTP 系の体感が落ちる)
+- この区間を通るのは HTTP 系のみ。メディアは通さない設計なので、トンネルの MTU(既定 1280)がメディア品質に影響することはない
 
-If you do not serve:
+### Cloudflare の注意
 
-```json
-{"m.server":"matrix.example.com:443"}
-```
+- 無料プランはアップロード上限 100MB。Synapse の `max_upload_size` を上限内に収めるか、メディアリポジトリのパスのみ proxy を外す
+- `/.well-known/matrix/*` は `application/json` と CORS ヘッダを維持する(キャッシュ設定に注意)
 
-from:
+## 経路B: VPS 単独
 
-```text
-https://example.com/.well-known/matrix/server
-```
+全コンポーネントを 1 台の VPS に集約する形態です。DNS とファイアウォールは経路A の VPS 側と同じで、Tailscale と自宅側の設定が不要になります。
 
-then other Matrix servers may try `example.com:8448`. In that case you must expose federation on `8448/tcp`, or fix delegation and keep using `443/tcp`.
+**データが VPS に載るため、ログ保全(requirements.md §1)の条件として VPS 外(自宅や別ストレージ)への定期バックアップが必須です。** バックアップ手順は roadmap Phase 4 で整備します。
 
-## Common blockers
+## 代替案: 自宅直公開
 
-### CGNAT
+VPS の帯域コストが問題になった場合などに、自宅サーバーを直接公開する従来パターンです。自宅の WAN IP が公開される点と、以下の回線条件を満たす必要がある点を許容できる場合のみ選びます。
 
-If your router WAN address is in one of these ranges, inbound port forwarding from the internet usually will not work:
+ルーター転送:
 
-- `100.64.0.0/10`
-- `10.0.0.0/8`
-- `172.16.0.0/12`
-- `192.168.0.0/16`
+- WAN `80/tcp` -> 自宅サーバー `:80`
+- WAN `443/tcp` -> 自宅サーバー `:443`
+- 通話も自宅で受ける場合はさらに `7881/tcp` と UDP レンジ
 
-Fix options:
+`/.well-known/matrix/server` で `matrix.example.com:443` に委譲するため、通常は `8448/tcp` を開けずに Federation できます。開けない場合、他の Matrix サーバーは `example.com:8448` を試しに行くことに注意してください。
 
-- ask the ISP for a public IPv4 address
-- use IPv6 if your ISP provides stable inbound IPv6
-- put a small VPS in front as a reverse proxy
-- use a tunnel provider for client access, though federation compatibility needs separate testing
+### この形態でだけ問題になる回線条件
 
-### Dynamic IP
+- **CGNAT / MAP-E / DS-Lite**: WAN アドレスが `100.64.0.0/10` / `10.0.0.0/8` / `172.16.0.0/12` / `192.168.0.0/16` の場合や、v6プラス等で使えるポートが制限される回線では、外部からのポート転送が成立しないか大きく制約されます。ISP に公開 IPv4 を依頼するか、経路A に切り替えるのが解決策です
+- **動的 IP**: DDNS か DNS プロバイダの API 更新が必要です
+- **hairpin NAT**: 外からは繋がるのに LAN 内から自ドメインへ繋がらない場合はこれです。ルーターの NAT ループバック有効化か、LAN 内 DNS 上書きで解決します
+- **ISP のポートブロック**: 一部の住宅向け回線は inbound `80/443` を塞いでいます
 
-If your public IP changes, use dynamic DNS or a DNS provider API updater. Matrix federation tolerates DNS changes, but bad or stale DNS will make invites and remote delivery flaky.
+## 外部からの疎通確認
 
-### Hairpin NAT
-
-Some routers cannot access the public domain from inside the LAN. If `https://chat.example.com` works outside but not at home, this is likely hairpin NAT.
-
-Fix options:
-
-- enable NAT loopback / hairpin NAT on the router
-- run split-horizon DNS at home
-- add local DNS overrides so the domains resolve to `192.168.11.30` inside the LAN
-
-### ISP blocked ports
-
-Some residential ISPs block inbound `80/tcp`, `443/tcp`, or both.
-
-Fix options:
-
-- ask the ISP to unblock or switch plan
-- use DNS-01 certificates and a nonstandard public port for client-only access
-- use a VPS reverse proxy and WireGuard/Tailscale back to home
-
-For Matrix federation, a normal public `443/tcp` path is the cleanest option.
-
-## Security baseline
-
-- Give `192.168.11.30` a static DHCP lease
-- Keep only `80/tcp` and `443/tcp` forwarded
-- Do not expose PostgreSQL
-- Do not expose Synapse `8008/tcp` directly
-- Keep Synapse behind Caddy
-- Enable automatic OS security updates
-- Back up PostgreSQL, Synapse media, and Synapse signing keys
-
-## Quick external checks
-
-From outside your home network:
+外部ネットワーク(スマホのテザリング等)から:
 
 ```sh
 curl -I https://chat.example.com
@@ -111,8 +79,10 @@ curl https://example.com/.well-known/matrix/server
 curl https://matrix.example.com/_matrix/client/versions
 ```
 
-Expected Matrix federation well-known:
+Federation の well-known の期待値:
 
 ```json
 {"m.server":"matrix.example.com:443"}
 ```
+
+通話導入後(Phase 3)は、`rtc.example.com` が Cloudflare を経由していないこと(応答ヘッダに `cf-ray` が無いこと)もあわせて確認してください。
