@@ -11,6 +11,9 @@
 - Cloudflare / VPS / Tailscale の経路方針を確定する
 - デプロイ形態を決める(自宅 + VPS / VPS 単独。architecture.md の Deployment topologies 参照)
 
+**進捗 (2026-07-03): サービス名は SelfMatrix に決定。** リポジトリ名も selfmatrix /
+selfmatrix-cinny / selfmatrix-element-call に統一済み。`SERVER_NAME`・ドメイン・VPS 選定は未決。
+
 Exit criteria:
 
 - `@user:domain` の形式に納得している
@@ -55,6 +58,9 @@ Exit criteria:
 UI の合意事項は docs/ui-design-notes.md (v1.2) を正とします。
 リスク扱いだったポップアウトは技術検証済み (docs/popout-spike.md):
 配信ストリーム単位のポップアウト (再接続なし) を主機能として EC fork のタイル UI に実装します。
+
+**進捗 (2026-07-03): fork リポジトリ作成済み**(selfmatrix-cinny / selfmatrix-element-call、
+ブランチ構成は docs/fork-strategy.md 参照)。typecheck 修正とスパイク成果はコミット済み。
 
 - fork repository を作り、upstream 追従用ブランチを作る
 - AGPL notice と source link を UI に残す

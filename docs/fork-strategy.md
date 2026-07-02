@@ -4,20 +4,19 @@
 
 Cinny本体の差分は小さく保ちます。Matrix SDK、暗号化、sync 周りに深い改造を入れると upstream 追従が重くなります。
 
-## Suggested git layout
+## Fork repositories (2026-07-03 作成済み)
 
-```sh
-git clone https://github.com/cinnyapp/cinny.git cinny-fork
-cd cinny-fork
-git remote rename origin upstream
-git remote add origin git@github.com:YOUR_ORG/YOUR_FORK.git
-git checkout -b product/discord-style-shell
-```
+- [zoobookfool/selfmatrix-cinny](https://github.com/zoobookfool/selfmatrix-cinny) — cinnyapp/cinny の fork
+- [zoobookfool/selfmatrix-element-call](https://github.com/zoobookfool/selfmatrix-element-call) — element-hq/element-call の fork。
+  ベースは **v0.20.1**(cinny の依存 `@element-hq/element-call-embedded@0.20.1` に合わせて固定)
 
-ブランチ方針:
+ローカルの clone は `remote rename origin upstream` + `remote add origin <fork>` 構成。
+
+ブランチ方針(両 fork 共通、実施済み):
 
 - `upstream-dev`: upstream `dev` を追うだけ
-- `product/discord-style-shell`: UIと設定の差分
+- `product/discord-style-shell`: UIと設定の差分(**デフォルトブランチ**)
+- `spike/*`: 技術検証の保存(cinny: `spike/call-popout`、EC: `spike/media-params`)
 - `release/*`: デプロイ用
 
 ## First fork changes

@@ -1,4 +1,4 @@
-# mesugaki-chat
+# SelfMatrix
 
 Cinny fork + Matrix/Synapse で、Discord 風のテキストチャット + 通話基盤を作るための公開リポジトリです。
 
