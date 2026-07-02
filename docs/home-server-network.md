@@ -27,6 +27,19 @@
 
 Cloudflare の proxy は HTTP(S)/WebSocket しか通せないため、`rtc.*` は必ず DNS only(グレー雲)にして VPS の IP へ直接届くようにします。逆に言うと **VPS の IP は `rtc.*` から判明します**。VPS は隠す対象ではなく、公開終端として扱ってください(自宅 IP は隠れたままです)。
 
+### サブドメインを SERVER_NAME にする場合
+
+apex(`example.com`)を他用途に空けたまま、サブドメイン(例: `m.example.com`)を
+SERVER_NAME にできます。その場合の注意:
+
+- well-known(`/.well-known/matrix/server` と `client`)は **SERVER_NAME のホスト**
+  (`m.example.com`)で配信します。apex には何も置きません
+- **Cloudflare 無料プランの Universal SSL は 1 階層(`*.example.com`)しかカバーしません。**
+  `chat.m.example.com` のような 2 階層を proxied にすると証明書エラーになります(Advanced
+  Certificate Manager が必要)。proxy 対象ホストはすべて 1 階層に並べてください:
+  SERVER_NAME `m.example.com` / API `matrix.example.com` / クライアント `chat.example.com` /
+  RTC `rtc.example.com`。well-known の委譲先は SERVER_NAME と同じ階層である必要はありません
+
 ### VPS 側ファイアウォール
 
 - `80/tcp`, `443/tcp`: edge Caddy(HTTP系)

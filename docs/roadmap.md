@@ -11,8 +11,15 @@
 - Cloudflare / VPS / Tailscale の経路方針を確定する
 - デプロイ形態を決める(自宅 + VPS / VPS 単独。architecture.md の Deployment topologies 参照)
 
-**進捗 (2026-07-03): サービス名は SelfMatrix に決定。** リポジトリ名も selfmatrix /
-selfmatrix-cinny / selfmatrix-element-call に統一済み。`SERVER_NAME`・ドメイン・VPS 選定は未決。
+**進捗 (2026-07-03):**
+
+- サービス名: **SelfMatrix** に決定 (リポジトリ名も selfmatrix / selfmatrix-cinny / selfmatrix-element-call に統一済み)
+- デプロイ形態: 運用者自身の環境は **A: 自宅 + VPS** に決定 (ポート開放不可の回線のため)。
+  スターターとしては「自宅オンリー / VPS 単独 / 自宅 + VPS」をサポート対象とする (Phase 4 の profile 整備に反映)
+- VPS: **さくらのVPS** を採用予定 (適合確認と各社の帯域比較は docs/bandwidth-comparison.md 参照)
+- 経路方針: 経路 A (Cloudflare → VPS → Tailscale → 自宅) で確定。ドメインは Cloudflare DNS 管理下の手持ちドメインを充当
+- `SERVER_NAME`: 手持ちドメインの**サブドメイン**を充てる方針まで決定、ラベルは保留 (Phase 1 着手までに確定)。
+  サブドメイン方式の注意は home-server-network.md の「サブドメインを SERVER_NAME にする場合」参照
 
 Exit criteria:
 
@@ -100,7 +107,8 @@ Exit criteria:
 - CI: shellcheck、`docker compose config -q`、`caddy validate`
 - PostgreSQL dump の自動化、media / signing key のバックアップ、restore drill
 - VPS 再構築スクリプト(ステートレス前提の担保)
-- 自宅 + VPS / VPS 単独の 2 トポロジを compose profile で切り替え可能にする
+- 自宅 + VPS / VPS 単独 / 自宅直公開の 3 トポロジを compose profile で切り替え可能にする
+  (Discord のセルフホスト代替という目的上、自宅オンリー運用も一級サポートにする — 2026-07-03 決定)
 - VPS 単独形態向けの外部バックアップ手順(ログ保全の条件)
 - `/_synapse/admin` の遮断、`x_forwarded: true` 等のリバースプロキシ整合
 - rate limit / abuse 対応、admin/moderator 手順、uptime monitoring
