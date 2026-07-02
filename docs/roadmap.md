@@ -18,8 +18,10 @@
   スターターとしては「自宅オンリー / VPS 単独 / 自宅 + VPS」をサポート対象とする (Phase 4 の profile 整備に反映)
 - VPS: **さくらのVPS** を採用予定 (適合確認と各社の帯域比較は docs/bandwidth-comparison.md 参照)
 - 経路方針: 経路 A (Cloudflare → VPS → Tailscale → 自宅) で確定。ドメインは Cloudflare DNS 管理下の手持ちドメインを充当
-- `SERVER_NAME`: 手持ちドメインの**サブドメイン**を充てる方針まで決定、ラベルは保留 (Phase 1 着手までに確定)。
+- `SERVER_NAME`: 手持ちドメインのサブドメイン(ラベル `selfmatrix`)に決定 (2026-07-03)。
   サブドメイン方式の注意は home-server-network.md の「サブドメインを SERVER_NAME にする場合」参照
+
+**Phase 0 完了 (2026-07-03)。** 決定事項はすべて確定(具体的なドメイン名は運用者の `.env` で扱い、本リポジトリには記載しない)。
 
 Exit criteria:
 
