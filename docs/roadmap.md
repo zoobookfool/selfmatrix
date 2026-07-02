@@ -47,7 +47,14 @@ Exit criteria:
 - 4項目の検証結果が記録され、Cinny 続行 / Element Web fork 切替のどちらかが確定している
 - 切替の場合、fork-strategy.md を対象クライアントで書き直す
 
+**結果 (2026-07-02): 完了・合格。** 4項目クリアで **Cinny fork 続行が確定**。
+記録は docs/client-spike-results.md 参照。
+
 ## Phase 2b: Client fork
+
+UI の合意事項は docs/ui-design-notes.md (v1.2) を正とします。
+リスク扱いだったポップアウトは技術検証済み (docs/popout-spike.md):
+配信ストリーム単位のポップアウト (再接続なし) を主機能として EC fork のタイル UI に実装します。
 
 - fork repository を作り、upstream 追従用ブランチを作る
 - AGPL notice と source link を UI に残す

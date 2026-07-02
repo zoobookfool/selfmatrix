@@ -114,7 +114,9 @@ docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml ht
 - 要件(MUST/SHOULD/LATER/OUT): [docs/requirements.md](docs/requirements.md)
 - 目標構成と容量試算: [docs/architecture.md](docs/architecture.md)
 - 進行計画(Phase 0〜7): [docs/roadmap.md](docs/roadmap.md)
-- クライアント選定スパイク: [docs/client-spike.md](docs/client-spike.md)
+- クライアント選定スパイク: [docs/client-spike.md](docs/client-spike.md) / 結果: [docs/client-spike-results.md](docs/client-spike-results.md)(Phase 2a 合格、Cinny fork 続行)
+- クライアント UI 設計メモ: [docs/ui-design-notes.md](docs/ui-design-notes.md)
+- ポップアウト技術検証(Phase 2b): [docs/popout-spike.md](docs/popout-spike.md)
 
 初期リリースの目標は Phase 3(通話MVP)までです。
 
