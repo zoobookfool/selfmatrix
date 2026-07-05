@@ -85,7 +85,7 @@ bash scripts/generate-synapse-admin-config.sh
 docker compose --profile admin up -d synapse-admin
 ```
 
-`.env` の `MATRIX_HOST` から `synapse-admin/config.json` の `restrictBaseUrl` を生成します。`SYNAPSE_ADMIN_BIND`(既定 `127.0.0.1:8083`)でホスト側のバインド先を指定します(**必ず `IP:PORT` 形式で書いてください** — ポート単体だと全インターフェースに公開されます)。**このポートをインターネットに公開しないでください。** synapse-admin は react-admin 製の静的 SPA で、ダッシュボードを開いたブラウザ自身が Synapse の `/_matrix` と `/_synapse/admin` に直接 fetch します(README 記載: "You have no need to expose these endpoints to the internet but to your network")。同梱の Caddyfile は `/_synapse/admin` を edge で 403 遮断しているため(4節)、ダッシュボードを開く端末は次のいずれかで Synapse に到達できる経路が必要です。
+`.env` の `MATRIX_HOST` から `synapse-admin/config.json` の `restrictBaseUrl` を生成します。**経路 A (自宅+VPS) など、edge が `/_synapse/admin` を遮断している構成では、生成後に `restrictBaseUrl` を公開 URL ではなく Synapse へ直接届く内部 URL (例: `http://<Tailscale の自宅 IP>:8028`) に書き換えてください** — ダッシュボードの admin API 呼び出しは公開 edge を通ると 403 になります (この書き換えはローカル運用値なのでコミットしません)。`SYNAPSE_ADMIN_BIND`(既定 `127.0.0.1:8083`)でホスト側のバインド先を指定します(**必ず `IP:PORT` 形式で書いてください** — ポート単体だと全インターフェースに公開されます)。**このポートをインターネットに公開しないでください。** synapse-admin は react-admin 製の静的 SPA で、ダッシュボードを開いたブラウザ自身が Synapse の `/_matrix` と `/_synapse/admin` に直接 fetch します(README 記載: "You have no need to expose these endpoints to the internet but to your network")。同梱の Caddyfile は `/_synapse/admin` を edge で 403 遮断しているため(4節)、ダッシュボードを開く端末は次のいずれかで Synapse に到達できる経路が必要です。
 
 - 自宅ネットワーク内から直接アクセスする(自宅サーバー配置の場合)
 - Tailscale などの private network 経由でアクセスする
