@@ -220,6 +220,14 @@ Discord 寄せ。既定挙動の実機確認から) ③**moderation = synapse-ad
 併走する積み残し: 外部ユーザー招待の実地確認 (Phase 1 残)、Renovate App インストール (Phase 4 残)。
 VPS 2GB 判断は Phase 7 では不要 (追加サービスは自宅側配置のため)。
 
+**進捗 (2026-07-05): ①② 完了・本番反映済み** (cinny fork c0cec72)。①SelfMatrix Dark テーマ =
+Discord 風 3 階調 + blurple を darkThemeData 派生で追加し、初回起動ユーザーのみ既定化
+(既存ユーザーの選択には影響しない initialSettings 分離方式。全上書きトークンで WCAG 4.5:1 以上を確認)。
+②通知 = 分析の結果 Matrix 既定 push rules はほぼ Discord 的 (全メッセージ = バッジ、メンション =
+音+強調、DM = 音) で push rule 変更は不要と確定。唯一の差分「通常メッセージでもトースト+音が出る」を
+クライアント側でゲート (トースト/音はメンションと DM に限定)。dev 実機で通常 = トースト 0 /
+メンション = 1 を Playwright 検証済み。
+
 - 独自テーマ、custom emoji/sticker 方針
 - notification tuning
 - SSO/OIDC、moderation dashboard、bridge/bot integrations
