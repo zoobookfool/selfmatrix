@@ -114,11 +114,20 @@ jacktrip -C <VPS_IP> -n 2 -b 24 --udprt
 
 スパイクは dummy ドライバによるプロトコル検証のため、実際の音は流していない。実オーディオでの確認手順:
 
-1. [jacktrip.org](https://jacktrip.github.io/jacktrip/) から Windows 版をインストール (winget: `winget install jacktrip`)
+1. [jacktrip.org](https://jacktrip.github.io/jacktrip/) の Install ページから Windows 版インストーラをダウンロードして実行 (winget/Chocolatey パッケージは存在しない — 2026-07 に winget-pkgs を確認済み)
 2. 192kHz 対応のオーディオインターフェース + ヘッドセットを接続し、Windows 側でサンプルレートを 192kHz に設定
 3. hub を上記手順で起動 (パッチを `-p 1` = client loopback にすると自分の声がそのまま返ってくるので 1 人でも確認可能)
 4. `jacktrip -C <VPS_IP> -n 2 -b 24 --udprt` で接続し、自分の声の返りで音質・遅延を体感確認
 5. 遅延を数値で見たい場合: ループバック録音 (送った音と返ってきた音を同時録音) して波形のズレを読む
+
+## 5.5 スパイク後の一次情報確認 (本実装への補正)
+
+スパイク後にソースコード (jacktrip/jacktrip main の Settings.cpp / JackTrip.h / UdpHubListener.cpp) を直接確認して判明した、本実装で採用すべき差分:
+
+- **パッチモードは `-p 2` (client fan out/in) を使う** — スパイクで使った `-p 4` (full mix) は enum 定義上「self-to-self を含む」= 自分の声がエコーバックする。`-p 2` が「自分以外の全員ミックス」で通話用途の正解
+- **hub には認証がある**: `-A/--auth` + `--certfile/--keyfile/--credsfile` (サーバー側)、`-A --username --password` (クライアント側)。ポート開けっ放しの接続リスクは認証で塞ぐ
+- クライアントは `-R/--rtaudio` + `--audiodevice` で **JACK のインストール不要** (OS のオーディオデバイスを直接使用)。バッファは `-F/--bufsize` (既定 128 = MTU 安全圏)。Windows で 192kHz を狙うならメーカー公式 ASIO ドライバ推奨 (ASIO4ALL は公式 KB が非推奨と明言)
+- `jacktrip://` deep link は商用 Virtual Studio 専用 — OSS の自前 hub では使えない (接続情報の提示・コピーで代替)
 
 ## 6. 撤収
 
