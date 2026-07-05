@@ -96,9 +96,10 @@ docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml ht
 
     作成が終わったら、不要であれば `registration_shared_secret` を削除して再起動します。
 
-## モデレーション/招待コード登録
+## モデレーション/招待コード登録/絵文字
 
 - **モデレーションダッシュボード(synapse-admin)**: Web GUI でユーザー無効化・ルーム削除などを操作できます。既定では起動しません。`docker compose --profile admin up -d synapse-admin` で起動し、インターネットには公開しない前提で運用してください。詳しくは [docs/operations.md](docs/operations.md) の「モデレーションダッシュボード」節を見てください。
+- **カスタム絵文字・スタンプ**: クライアント (Cinny fork) が MSC2545 image packs を実装済みです。サーバー共通絵文字の運用の型と操作手順は [docs/emoji-stickers.md](docs/emoji-stickers.md) を見てください。
 - **招待コード制の自己登録**: SSO/OIDC の代替として、トークンを持つ相手だけが自己登録できるモードを用意しています。`.env` の `ENABLE_INVITE_REGISTRATION=true` と `scripts/invite-token.sh` で有効化・トークン発行します。手順は [docs/operations.md](docs/operations.md) の「招待トークンでの登録」節を見てください。
 
 ## バックアップと復元
