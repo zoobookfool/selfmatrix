@@ -242,10 +242,7 @@ max_event_delay_duration: 24h
 
 ## ハイレゾ音声(拡張オプション)
 
-192kHz/24bit の非圧縮音声を JackTrip (hub mode) で中継する、本体とは結合しない独立のオプションモジュールです。クライアント fork には手を入れず、ネイティブアプリでの参加が前提です。有効化しなくても通常の通話・チャットには影響ありません。
-
-- サーバー構築: `scripts/provision-hires-vps.sh`(本体の `provision-rtc-vps.sh` と同じ骨格のワンショットスクリプト)
-- 参加者/運用者向けガイド: [docs/hires-audio.md](docs/hires-audio.md)
+192kHz/24bit の非圧縮音声を JackTrip (hub mode) で中継する、本体とは結合しない独立のオプションモジュールです。**別リポジトリ [zoobookfool/selfmatrix-hires](https://github.com/zoobookfool/selfmatrix-hires) として提供します**(サーバー構築スクリプト + 参加者/運用者ガイド)。クライアント fork には手を入れず、ネイティブアプリでの参加が前提です。有効化しなくても通常の通話・チャットには影響ありません。設計の経緯は [docs/hires-spike.md](docs/hires-spike.md) を参照してください。
 
 ## 計画
 
