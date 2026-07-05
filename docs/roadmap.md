@@ -92,6 +92,17 @@ Exit criteria:
 
 ## Phase 3: MatrixRTC backend(通話MVP)
 
+**進捗 (2026-07-05): 通話 MVP 完了、負荷試験のみ保留。**
+LiveKit + lk-jwt をスターター同梱の `rtc/` compose で VPS に配置し、well-known の
+`rtc_foci`・Synapse の MatrixRTC 設定(MSC3266/4222/4354 + delayed events)・
+ファイアウォール開放(7881/tcp + UDP レンジ)まで完了。E2EE 有効ルームでの 2 者通話を
+本番経路で検証済み(per-participant E2EE、メディアは node_ip 直の UDP を SFU ログで確認)。
+クライアント fork はルーム作成時の E2EE トグルを既定 ON に変更済み。
+残: ①負荷試験(単一マシンからの連続ログインが homeserver のレート制限に当たるため、
+テスト時の rc 緩和 + 参加者分散の再設計が必要)②RTC ホストの DNS-only 化(現在は暫定で
+CDN proxy 経由。シグナリングは HTTP 系なので動作し、メディアは IP 直のため影響なし)
+③VPS 増強(現行 1GB RAM は通話常用には非力、2GB 以上を推奨 → Phase 4 で判断)。
+
 - VPS に LiveKit SFU と lk-jwt-service を配置(compose 化)
 - MatrixRTC backend をスターターに同梱し、友人の自前運用でも同一手順で SFU を建てられるようにする
 - LiveKit の `auto_create: false`、webhook 連携、公開 IP 告知(node_ip)を設定
