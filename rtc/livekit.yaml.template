@@ -30,3 +30,6 @@ webhook:
   api_key: ${LIVEKIT_KEY}
   urls:
     - http://127.0.0.1:6080/sfu_webhook
+
+# Prometheus metrics (scrape via your private network; blocked publicly by the firewall)
+prometheus_port: 6789
