@@ -195,6 +195,11 @@ Jamulus は 48kHz 固定のため除外。実機検証で VPS 上のヘッドレ
 (docs/hires-spike.md) のみ残す。残: 本番 VPS への配備と聴感・実接続の検証 (運用者が実施。
 exit criteria の充足判定はその結果を待つ)。
 
+**追記 (2026-07-06):** 要件の正本を selfmatrix-hires/docs/requirements.md に移管し、ゼロベースで
+再定義(用途 = 会話の高音質化 + 収録・録音素材、対応目標 384kHz/32bit float、Stage 0〜3 の
+段階設計、可逆圧縮は WavPack 第一候補、録音はクライアント側 double-ender 推奨)。本リポジトリ
+側の §4 は参照に差し替え済み。
+
 - スパイク: SonoBus / JackTrip(hub)を 192kHz/24bit・10 人・片道 150ms 以内で検証し、買う/作るを判断
 - 自作の場合: ネイティブ送受信アプリ + VPS 中継、可逆圧縮を既定
 - Opus 系統とのフォールバックとミュート制御(二重再生防止)

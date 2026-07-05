@@ -108,6 +108,8 @@ Discord の「サーバー」は Matrix では基本的に Space で表現しま
 
 ## Hi-res audio subsystem
 
+要件の正本は独立リポジトリ [zoobookfool/selfmatrix-hires](https://github.com/zoobookfool/selfmatrix-hires) の [docs/requirements.md](https://github.com/zoobookfool/selfmatrix-hires/blob/main/docs/requirements.md)(2026-07-06 ゼロベース再定義)に移管されました。本系統は本体の E2EE 方針(Realtime media model 参照)の適用対象外で、既定は平文 UDP 伝送です。以下は移管前時点の記述です。
+
 - 目的は通話音声そのものの高音質化(192kHz/24bit)。会話が成立する片道遅延 150ms 以内を最優先します。
 - 送信はネイティブアプリ + オーディオインターフェース経由。ブラウザの WebRTC/getUserMedia は 48kHz に律速されるため通しません。
 - ブラウザのエコーキャンセルを通らないため、参加者はヘッドセット必須の運用とします(AEC 自前実装は将来)。
