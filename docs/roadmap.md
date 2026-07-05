@@ -152,6 +152,16 @@ Exit criteria:
 
 ## Phase 5: Media quality tuning
 
+**進捗 (2026-07-05): 完了 (スケール検証のみ保留)。** fork 側 (selfmatrix-element-call) で
+①画面共有 4K60 プリセット (25Mbps エンコード + キャプチャ解像度 3840×2160@60 指定)、
+②Opus 384kbps ステレオ (forceStereo、DTX 無効)、③simulcast ポリシー (ピン留め = 注視タイルは
+HIGH レイヤー、非注視は 720p15/1.5Mbps の低レイヤーへ降格。購読側 setVideoQuality 連動) を実装。
+dev 環境で SDP / webrtc-internals による実測 (audio maxBitrate 384k + stereo=1、simulcast 2 層、
+キャプチャ 4K60) と unit test を確認し、cinny 同梱ビルドとして本番反映済み。本番経路の
+E2EE 通話スモーク (2 者・perParticipantE2EE・60 秒安定) も PASS。
+残: 4K60 × 3 本 + 10 人での品質検証 — 負荷試験 (Phase 3) と同じくレート制限緩和と参加者分散の
+再設計が必要なため保留。実運用で怪しくなったら Grafana ダッシュボードと併せて実測する。
+
 - 画面共有の 4K 60fps プリセット追加(fork 側)
 - Opus 384kbps ステレオ対応(fork 側)
 - simulcast ポリシー調整(注視タイル高画質、他は降格)
