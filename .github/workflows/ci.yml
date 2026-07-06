@@ -69,7 +69,7 @@ jobs:
       - name: Check .env.example has required keys
         run: |
           missing=0
-          for key in SERVER_NAME MATRIX_HOST CHAT_HOST POSTGRES_PASSWORD CINNY_IMAGE SYNAPSE_ADMIN_TAG SYNAPSE_ADMIN_BIND ENABLE_INVITE_REGISTRATION; do
+          for key in SERVER_NAME MATRIX_HOST CHAT_HOST POSTGRES_PASSWORD CINNY_IMAGE SYNAPSE_ADMIN_TAG SYNAPSE_ADMIN_BIND ENABLE_INVITE_REGISTRATION ALLOW_CUSTOM_HOMESERVERS; do
             if ! grep -qE "^${key}=" .env.example; then
               echo "Missing key in .env.example: ${key}" >&2
               missing=1

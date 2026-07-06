@@ -10,6 +10,16 @@ fi
 # Windows checkout (core.autocrlf) の .env は CRLF になりうるので \r を必ず落とす —
 # 落とさないと placeholder ガードが素通りし、config.json に不可視の \r が混入する。
 SERVER_NAME=$(grep -E '^SERVER_NAME=' .env | head -1 | cut -d= -f2- | tr -d '\r')
+# ALLOW_CUSTOM_HOMESERVERS is optional; grep exits 1 (and trips pipefail) when
+# absent from .env entirely, so guard it explicitly rather than relying on the
+# pipeline's tail commands succeeding on empty input.
+ALLOW_CUSTOM_HOMESERVERS=$(grep -E '^ALLOW_CUSTOM_HOMESERVERS=' .env | head -1 | cut -d= -f2- | tr -d '\r' || true)
+ALLOW_CUSTOM_HOMESERVERS_LOWER="$(printf '%s' "${ALLOW_CUSTOM_HOMESERVERS:-false}" | tr '[:upper:]' '[:lower:]')"
+if [[ "$ALLOW_CUSTOM_HOMESERVERS_LOWER" =~ ^(true|1|yes)$ ]]; then
+  ALLOW_CUSTOM_HOMESERVERS_JSON=true
+else
+  ALLOW_CUSTOM_HOMESERVERS_JSON=false
+fi
 
 if [[ -z "${SERVER_NAME}" || "${SERVER_NAME}" == "example.com" ]]; then
   echo "Set SERVER_NAME in .env before generating cinny/config.json." >&2
@@ -20,7 +30,7 @@ cat > cinny/config.json <<CFG
 {
   "defaultHomeserver": 0,
   "homeserverList": ["${SERVER_NAME}"],
-  "allowCustomHomeservers": false,
+  "allowCustomHomeservers": ${ALLOW_CUSTOM_HOMESERVERS_JSON},
   "hideExplore": true,
   "featuredCommunities": {
     "openAsDefault": false,
@@ -35,4 +45,4 @@ cat > cinny/config.json <<CFG
 }
 CFG
 
-echo "Generated cinny/config.json for ${SERVER_NAME}."
+echo "Generated cinny/config.json for ${SERVER_NAME} (allowCustomHomeservers=${ALLOW_CUSTOM_HOMESERVERS_JSON})."

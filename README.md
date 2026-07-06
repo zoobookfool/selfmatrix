@@ -101,6 +101,7 @@ docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml ht
 - **モデレーションダッシュボード(synapse-admin)**: Web GUI でユーザー無効化・ルーム削除などを操作できます。既定では起動しません。`docker compose --profile admin up -d synapse-admin` で起動し、インターネットには公開しない前提で運用してください。詳しくは [docs/operations.md](docs/operations.md) の「モデレーションダッシュボード」節を見てください。
 - **カスタム絵文字・スタンプ**: クライアント (Cinny fork) が MSC2545 image packs を実装済みです。サーバー共通絵文字の運用の型と操作手順は [docs/emoji-stickers.md](docs/emoji-stickers.md) を見てください。
 - **招待コード制の自己登録**: SSO/OIDC の代替として、トークンを持つ相手だけが自己登録できるモードを用意しています。`.env` の `ENABLE_INVITE_REGISTRATION=true` と `scripts/invite-token.sh` で有効化・トークン発行します。手順は [docs/operations.md](docs/operations.md) の「招待トークンでの登録」節を見てください。
+- **カスタムホームサーバーでのログイン**: `.env` の `ALLOW_CUSTOM_HOMESERVERS=true` にすると、ログイン画面に「カスタムホームサーバー」の選択肢が増え、このサーバーにアカウントを作らずに、他の Matrix ホームサーバー (matrix.org 等) の既存アカウントでこのクライアントにログインできます。既定のホームサーバーの選択はそのまま残るので通常の登録導線には影響しません。**通話の SFU は先にルームへ参加した人のホームサーバーの設定が使われる (早い者勝ち)** ため、自サーバーの回線で検証したいときは自サーバーのアカウントを先に通話へ参加させてください。
 
 ## バックアップと復元
 
