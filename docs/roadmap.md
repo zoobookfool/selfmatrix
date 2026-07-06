@@ -269,9 +269,17 @@ Exit criteria:
 Phase 0〜7 完走後の運用フェーズ。実利用で見つかった改善点と「Discord にある機能は基本対応する」
 方針 (requirements.md §9、2026-07-06 決定) のバックログをここで管理する。
 
-- **ノイズ抑制 (Krisp 相当) のスパイク** — 方式選定 (LiveKit Krisp SDK / RNNoise WASM 等)。
-  requirements.md §3 に SHOULD として追加済み。配線ポイントは EC の ConnectionFactory
-  (audioCaptureDefaults) 付近と調査済み
+- ~~ノイズ抑制 (Krisp 相当) のスパイク~~ → **実装完了 (2026-07-06、EC 08556d8a)**。
+  方式選定: LiveKit Krisp SDK は LiveKit Cloud 契約限定ライセンスのため除外 (self-host SFU 向け
+  認可経路は ai-coustics のみで Krisp には無い — 一次情報確認)。採用 = **RNNoise WASM**
+  (@sapphi-red/web-noise-suppressor、MIT。Jitsi Meet が RNNoise を本番採用している実績)。
+  livekit-client の音声 TrackProcessor として実装、既定 ON (Discord パリティ)・設定トグル付き・
+  初期化失敗時は素通しフォールバック。ML 有効時はブラウザ標準 noiseSuppression を false に
+  (二重掛け回避)。実装上の要点: processor は capture defaults ではなく **track 生成後の
+  live-sync でのみ attach** (livekit-client は track 生成後に audioContext を設定するため、
+  capture defaults 経由だと初回マイク publish が throw する)。dev 実機検証 5 項目 PASS。
+  残: 運用者の聴感評価 (体感が悪ければ既定 OFF へ)。既知の限界: RNNoise は定常ノイズに強く
+  非定常ノイズ (雑踏・音楽) には Krisp より弱い
 - **SFU 切断時の自動再参加** — 2026-07-06 の実測 (検証 V4) で、SFU 再起動時に通話が自動復帰しない
   ことを確認 (LiveKit ルームはインメモリで消え、クライアントは数秒で再接続を断念して
   「Reconnecting...」のまま)。当面は運用ルール (operations.md §2.6) で回避し、恒久対応は
