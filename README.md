@@ -249,7 +249,7 @@ max_event_delay_duration: 24h
 
 ## ハイレゾ音声(拡張オプション)
 
-192kHz/24bit の非圧縮音声を JackTrip (hub mode) で中継する、本体とは結合しない独立のオプションモジュールです。**別リポジトリ [zoobookfool/selfmatrix-hires](https://github.com/zoobookfool/selfmatrix-hires) として提供します**(サーバー構築スクリプト + 参加者/運用者ガイド)。クライアント fork には手を入れず、ネイティブアプリでの参加が前提です。有効化しなくても通常の通話・チャットには影響ありません。設計の経緯は [workspace の hires-spike.md](https://github.com/zoobookfool/selfmatrix-workspace/blob/main/hires-spike.md) を参照してください。
+192kHz/24bit の非圧縮音声を JackTrip (hub mode) で中継する、本体とは結合しない独立のオプションモジュールです。**別リポジトリ [zoobookfool/selfmatrix-hires](https://github.com/zoobookfool/selfmatrix-hires) として提供します**(サーバー構築スクリプト + 参加者/運用者ガイド)。クライアント fork には手を入れず、ネイティブアプリでの参加が前提です。有効化しなくても通常の通話・チャットには影響ありません。設計の経緯は [workspace の hires-spike.md](https://github.com/zoobookfool/selfmatrix-workspace/blob/main/spikes/hires-spike.md) を参照してください。
 
 ## 計画・設計 (workspace)
 
@@ -259,7 +259,7 @@ max_event_delay_duration: 24h
 
 ## 改修参加
 
-改修案は Issue へ、実装案は Pull Request へお願いします。要件の判断基準は [workspace の requirements.md](https://github.com/zoobookfool/selfmatrix-workspace/blob/main/requirements.md) を正とします。
+改修案は Issue へ、実装案は Pull Request へお願いします。要件の判断基準は [workspace の requirements.md](https://github.com/zoobookfool/selfmatrix-workspace/blob/main/planning/requirements.md) を正とします。
 
 - UI/文言/テーマ改修: `client/` に入るクライアント fork が対象
 - デプロイ/運用改修: `compose.yaml`, `docs/`, `scripts/` が対象
