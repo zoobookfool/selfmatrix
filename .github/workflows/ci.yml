@@ -43,7 +43,7 @@ jobs:
           POSTGRES_PASSWORD=ci-placeholder-password
           SYNAPSE_TAG=latest
           CINNY_IMAGE=ghcr.io/example/selfmatrix-cinny
-          CINNY_TAG=sha-ec64b63
+          CINNY_TAG=sha-4197034
           SYNAPSE_REPORT_STATS=no
           TZ=UTC
           SYNAPSE_ADMIN_TAG=0.11.4
